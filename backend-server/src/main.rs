@@ -1,17 +1,25 @@
 use rocket::http::Header;
 use rocket::{Request, Response};
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::{get, post, routes, launch, State};
+use rocket::{get, post, routes, State};
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 use serde::{Serialize, Deserialize};
-
+use rocket::serde::json::Json;
 // Deine Datenstruktur. 
 // Wichtig in SurrealDB 3.x+: Eigene Structs müssen zusätzlich `SurrealValue` implementieren!
 #[derive(Debug, Serialize, Deserialize)]
-struct Task {
-    title: String,
-    completed: bool,
+#[serde(crate = "rocket::serde")]
+struct LoginRequest {
+    login_username: String,
+    login_password: String,
+}
+// Wir definieren ein Struct für die Antwort an Tauri
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct LoginResponse {
+    message: String,
+    success: bool,
 }
 
 // Typ-Alias für saubereren Code in den Routen
@@ -35,18 +43,23 @@ impl Fairing for CORS {
 
 
 #[get("/")]
-fn index() -> &'static str {
+async fn index() -> &'static str {
     "Hello, world!"
 }
 
-#[get("/login")]
-fn login() -> &'static str {
-    println!("Login function called, db_main returned: {:?}", anser);
-    return "Login successful!"
+#[post("/login", data = "<login_data>")]
+async fn login(
+    db: &State<DbState>,
+    login_data: Json<LoginRequest>
+    ) -> Result<Json<LoginResponse>, String> {
+    Ok(Json(LoginResponse {
+        message: "Login successful!".into(),
+        success: true,
+    }))
 }
 
-#[get("/register")]
-fn register() -> &'static str {
+#[post("/register")]
+async fn register() -> &'static str {
     "Registration successful!"
 }
 

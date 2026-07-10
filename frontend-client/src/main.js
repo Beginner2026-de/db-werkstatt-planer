@@ -27,7 +27,7 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
 
     try {
         // Daten per POST an die dynamische IP senden
-        const response = await fetch(`${BACKEND_IP}/api/auth/login`, {
+        const response = await fetch(`${BACKEND_IP}/api/auth/login/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
 
     try {
         // Daten per POST an die dynamische IP senden
-        const response = await fetch(`${BACKEND_IP}/api/auth/register`, {
+        const response = await fetch(`${BACKEND_IP}/api/auth/register/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
