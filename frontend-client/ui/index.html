@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Zentraler Client</title>
+</head>
+<body>
+  <h1>Verbindung zum zentralen Server</h1>
+  <button id="btn">Server abfragen</button>
+  <p id="output">Noch keine Daten...</p>
+
+  <script>
+    // In der Entwicklung zeigt es auf deinen lokalen PC, 
+    // später trägst du hier die IP des Server-PCs ein.
+    const SERVER_URL = "http://192.168.178.50:8080"; 
+
+    document.getElementById('btn').addEventListener('click', async () => {
+      try {
+        const response = await fetch(`${SERVER_URL}/api/status`);
+        const daten = await response.json();
+        document.getElementById('output').innerText = `Status: ${daten.status} (${daten.server})`;
+      } catch (error) {
+        document.getElementById('output').innerText = "Fehler: Server nicht erreichbar.";
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>

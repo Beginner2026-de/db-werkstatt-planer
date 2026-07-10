@@ -1,0 +1,13 @@
+{
+  "permissions": [
+    "core:default",
+    "http:default",
+    {
+      "identifier": "http:allow-request",
+      "allow": [
+        { "url": "http://localhost:8080/*" },
+        { "url": "http://192.168.*.*:8080/*" } 
+      ]
+    }
+  ]
+}
