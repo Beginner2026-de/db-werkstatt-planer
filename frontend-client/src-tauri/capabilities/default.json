@@ -6,5 +6,8 @@
   "permissions": [
     "core:default",
     "opener:default"
-  ]
+  ],
+  "remoteTargets": [
+  "http://127.0.0.1:8888"
+]
 }

@@ -26,9 +26,19 @@ fn index() -> &'static str {
     "Hello, world!"
 }
 
+#[get("/login")]
+fn login() -> &'static str {
+    "Login successful!"
+}
+
+#[get("/register")]
+fn register() -> &'static str {
+    "Registration successful!"
+}
+
 #[launch]
 fn rocket() -> _ {
     rocket::build()
         .attach(CORS)
-        .mount("/", routes![index])
+        .mount("/api/auth", routes![login, register])
 }
