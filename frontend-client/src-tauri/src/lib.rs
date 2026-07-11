@@ -6,6 +6,9 @@ fn greet(name: &str) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Verhindert den Wayland-Absturz auf Linux/NVIDIA-Systemen
+    std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet])
