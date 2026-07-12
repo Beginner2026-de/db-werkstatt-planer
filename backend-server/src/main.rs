@@ -1,13 +1,10 @@
-use rocket::http::{Header,Method} ;
-use rocket::{Request, Response, Data};
-use rocket::fairing::{Fairing, Info, Kind};
-use rocket::{get, post, routes, State, options};
+use rocket::{get, post, routes, State};
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 use serde::{Serialize, Deserialize};
 use rocket::serde::json::Json;
 use rocket_cors::{
-    AllowedHeaders, AllowedOrigins, CorsOptions, AllowedMethods
+    AllowedHeaders, AllowedOrigins, CorsOptions
 };
 
 
@@ -24,11 +21,6 @@ struct LoginResponse {
 // Typ-Alias für saubereren Code in den Routen
 type DbState = Surreal<Db>;
 
-
-#[get("/")]
-async fn index() -> &'static str {
-    "Hello, world!"
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
