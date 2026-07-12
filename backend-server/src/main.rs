@@ -7,7 +7,8 @@ use rocket_cors::{
     AllowedHeaders, AllowedOrigins, CorsOptions
 };
 
-
+// Typ-Alias für saubereren Code in den Routen
+type DbState = Surreal<Db>;
 
 
 // Wir definieren ein Struct für die Antwort an Tauri
@@ -17,10 +18,6 @@ struct LoginResponse {
     message: String,
     success: bool,
 }
-
-// Typ-Alias für saubereren Code in den Routen
-type DbState = Surreal<Db>;
-
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
