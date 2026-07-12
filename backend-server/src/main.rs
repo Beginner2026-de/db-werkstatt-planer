@@ -6,6 +6,11 @@ use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 use serde::{Serialize, Deserialize};
 use rocket::serde::json::Json;
+use rocket_cors::{
+    AllowedHeaders, AllowedOrigins, CorsOptions, AllowedMethods
+};
+
+
 
 
 // Wir definieren ein Struct für die Antwort an Tauri
@@ -18,33 +23,7 @@ struct LoginResponse {
 
 // Typ-Alias für saubereren Code in den Routen
 type DbState = Surreal<Db>;
-pub struct CORS;
-#[rocket::async_trait]
-impl Fairing for CORS {
-    fn info(&self) -> Info {
-        Info {
-            name: "Add CORS headers",
-            kind: Kind::Request 
-        }
-    }
 
-async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
-        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-        response.set_header(Header::new("Access-Control-Allow-Methods", "POST, GET, OPTIONS"));
-        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
-        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
-
-        // Wenn es OPTIONS war, zwingend mit 200 OK antworten
-        if request.method() == Method::Options {
-            response.set_status(rocket::http::Status::Ok);
-            response.set_sized_body(0, std::io::Cursor::new(""));
-        }
-    }
-}
-#[options("/<path..>")]
-fn all_options(path: std::path::PathBuf) -> &'static str {
-    ""
-}
 
 #[get("/")]
 async fn index() -> &'static str {
@@ -54,19 +33,19 @@ async fn index() -> &'static str {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 struct LoginRequest {
-    login_username: String,
-    login_password: String,
+    pub login_username: String,
+    pub login_password: String,
 }
 
-#[post("/login", data = "<login_data>")]
+#[post("/login",format = "json", data = "<login_data>")]
 async fn login(
     db: &State<DbState>,
     login_data: Json<LoginRequest>
     ) -> Result<Json<LoginResponse>, String> {
+    rocket::info!("Hallo");
+    let data = login_data.into_inner();
 
-    let username = &login_data.login_username;
-    let paswort = &login_data.login_password;
-    rocket::info!("Name {}, Passwort {}", username, paswort);
+    rocket::info!("Name {}, Passwort {}", data.login_username, data.login_password);
 
     Ok(Json(LoginResponse {
         message: "Login successful!".into(),
@@ -92,11 +71,26 @@ async fn main() -> Result<(), rocket::Error> {
         .await
         .expect("Fehler beim Auswählen von Namespace/DB");
 
+    let cors = CorsOptions {
+        allowed_origins: AllowedOrigins::all(),
+        allowed_methods: vec![
+            rocket::http::Method::Get.into(),
+            rocket::http::Method::Post.into(),
+            rocket::http::Method::Options.into(),
+        ]
+        .into_iter()
+        .collect(),
+        allowed_headers: AllowedHeaders::all(),
+        allow_credentials: true,
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("CORS-Konfiguration ungültig");
+
     // 3. Rocket starten und die DB als State übergeben
     let _ = rocket::build()
-        .attach(CORS)
+        .attach(cors)
         .manage(db) // Hier wird die DB für alle Routen registriert
-        .mount("/", routes![all_options]) // <-- Hier mitsenden!
         .mount("/api/auth", routes![login, register])
         .launch()
         .await?;
