@@ -1,12 +1,12 @@
-use rocket::{get, post, routes, State};
-use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
-use serde::{Serialize, Deserialize};
-use rocket::serde::json::Json;
 use rocket_cors::{
     AllowedHeaders, AllowedOrigins, CorsOptions
 };
+use routes::auth::{login, register};
+mod models;
+mod routes;
 
+<<<<<<< HEAD
 // Typ-Alias für saubereren Code in den Routen
 type DbState = Surreal<Db>;
 
@@ -46,6 +46,8 @@ async fn login(
 async fn register() -> &'static str {
     "Registration successful!"
 }
+=======
+>>>>>>> 574a080 (split up code)
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
@@ -80,7 +82,7 @@ async fn main() -> Result<(), rocket::Error> {
     let _ = rocket::build()
         .attach(cors)
         .manage(db) // Hier wird die DB für alle Routen registriert
-        .mount("/api/auth", routes![login, register])
+        .mount("/api/auth", rocket::routes![login, register])
         .launch()
         .await?;
 
