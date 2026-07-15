@@ -1,15 +1,22 @@
-async function loadHeader() {
-    const response = await fetch("components/header.html");
-    const html = await response.text();
+async function loadComponent(elementId, filePath) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
 
-    document.getElementById("header").innerHTML = html;
+    const response = await fetch(filePath);
+    if (!response.ok) {
+        throw new Error(`Failed to load ${filePath}: ${response.status}`);
+    }
+
+    element.innerHTML = await response.text();
 }
 
-async function loadFooter() {
-    const response = await fetch("components/footer.html");
-    const html = await response.text();
-
-    document.getElementById("footer").innerHTML = html;
+function initComponents() {
+    loadComponent("header", "components/header.html");
+    loadComponent("footer", "components/footer.html");
 }
-loadHeader();
-loadFooter();
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initComponents);
+} else {
+    initComponents();
+}
