@@ -6,48 +6,6 @@ use routes::auth::{login, register};
 mod models;
 mod routes;
 
-<<<<<<< HEAD
-// Typ-Alias für saubereren Code in den Routen
-type DbState = Surreal<Db>;
-
-
-// Wir definieren ein Struct für die Antwort an Tauri
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct LoginResponse {
-    message: String,
-    success: bool,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(crate = "rocket::serde")]
-struct LoginRequest {
-    pub login_username: String,
-    pub login_password: String,
-}
-
-#[post("/login",format = "json", data = "<login_data>")]
-async fn login(
-    db: &State<DbState>,
-    login_data: Json<LoginRequest>
-    ) -> Result<Json<LoginResponse>, String> {
-    rocket::info!("Hallo");
-    let data = login_data.into_inner();
-
-    rocket::info!("Name {}, Passwort {}", data.login_username, data.login_password);
-
-    Ok(Json(LoginResponse {
-        message: "Login successful!".into(),
-        success: true,
-    }))
-}
-
-#[post("/register")]
-async fn register() -> &'static str {
-    "Registration successful!"
-}
-=======
->>>>>>> 574a080 (split up code)
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
